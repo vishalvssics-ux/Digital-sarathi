@@ -364,6 +364,9 @@ import '../../providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 // IMPORT YOUR MODEL HERE
 import '../../models/user_model.dart'; 
+import '../../widgets/glass_scaffold.dart';
+import '../../widgets/glass_container.dart';
+ 
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -375,12 +378,19 @@ class ProfileScreen extends StatelessWidget {
         final user = auth.user;
 
         if (user == null) {
-          return const Scaffold(body: Center(child: Text("Not logged in")));
+          return const Scaffold(
+            backgroundColor: Colors.transparent, 
+            body: Center(child: Text("Not logged in", style: TextStyle(color: Colors.white)))
+          );
         }
 
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text("Profile"),
+            title: const Text("Profile", style: TextStyle(color: Colors.white)),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: const IconThemeData(color: Colors.white),
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
@@ -399,22 +409,36 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                  child: Text(
-                    user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+                  ),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    child: Text(
+                      user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
+                      style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(user.fullName, style: Theme.of(context).textTheme.headlineSmall),
-                Text(user.email, style: const TextStyle(color: Colors.grey)),
+                Text(user.fullName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
+                Text(user.email, style: const TextStyle(color: Colors.white70)),
                 const SizedBox(height: 32),
                 
-                _ProfileItem(title: "Mobile", value: user.mobile ?? 'N/A', icon: Icons.phone),
-                _ProfileItem(title: "Language", value: user.language ?? 'N/A', icon: Icons.language),
-                _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
+                GlassContainer(
+                   padding: const EdgeInsets.symmetric(vertical: 8),
+                   child: Column(
+                     children: [
+                        _ProfileItem(title: "Mobile", value: user.mobile ?? 'N/A', icon: Icons.phone),
+                        _ProfileItem(title: "Language", value: user.language ?? 'N/A', icon: Icons.language),
+                        _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
+                     ]
+                   )
+                ),
                 
                 const SizedBox(height: 48),
                 ElevatedButton.icon(
@@ -428,8 +452,10 @@ class ProfileScreen extends StatelessWidget {
                   icon: const Icon(Icons.logout),
                   label: const Text("Logout"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[50],
-                    foregroundColor: Colors.red,
+                    backgroundColor: Colors.red.withOpacity(0.2),
+                    foregroundColor: Colors.red[100],
+                    elevation: 0,
+                    side: BorderSide(color: Colors.red.withOpacity(0.5)),
                   ),
                 ),
               ],
@@ -450,13 +476,10 @@ class _ProfileItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).primaryColor),
-        title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-        subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-      ),
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.white60)),
+      subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
     );
   }
 }
@@ -567,53 +590,99 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile")),
+    return GlassScaffold(
+      appBar: AppBar(
+        title: const Text("Edit Profile", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: "Full Name", border: OutlineInputBorder()),
-                validator: (val) => val!.isEmpty ? "Name is required" : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
-                validator: (val) => val!.isEmpty ? "Email is required" : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _mobileController,
-                decoration: const InputDecoration(labelText: "Mobile", border: OutlineInputBorder()),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _languageController,
-                decoration: const InputDecoration(labelText: "Language", border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _literacyController,
-                decoration: const InputDecoration(labelText: "Literacy Level", border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _updateProfile,
-                  child: _isLoading 
-                    ? const CircularProgressIndicator(color: Colors.white) 
-                    : const Text("Save Changes"),
+        child: GlassContainer(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: "Full Name",
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                  validator: (val) => val!.isEmpty ? "Name is required" : null,
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _emailController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: "Email",
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                  validator: (val) => val!.isEmpty ? "Email is required" : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _mobileController,
+                  keyboardType: TextInputType.phone,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: "Mobile",
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _languageController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: "Language",
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _literacyController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: "Literacy Level",
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _updateProfile,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: _isLoading 
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).primaryColor)
+                        ) 
+                      : const Text("Save Changes"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

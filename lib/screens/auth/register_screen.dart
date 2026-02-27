@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/user_model.dart';
+import '../../widgets/glass_scaffold.dart';
+import '../../widgets/glass_container.dart';
+
 
 
 class RegisterScreen extends StatefulWidget {
@@ -67,100 +70,121 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Create Account")),
+    return GlassScaffold(
+      appBar: AppBar(
+        title: const Text("Create Account", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: "Full Name",
-                    prefixIcon: Icon(Icons.person_outline),
+          child: GlassContainer(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Full Name",
+                      prefixIcon: Icon(Icons.person_outline, color: Colors.white70),
+                    ),
+                    validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
-                  validator: (v) => v!.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    prefixIcon: Icon(Icons.email_outlined),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Email",
+                      prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
+                    ),
+                    validator: (v) => v!.contains('@') ? null : 'Invalid email',
                   ),
-                  validator: (v) => v!.contains('@') ? null : 'Invalid email',
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _mobileController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: "Mobile Number",
-                    prefixIcon: Icon(Icons.phone_outlined),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _mobileController,
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Mobile Number",
+                      prefixIcon: Icon(Icons.phone_outlined, color: Colors.white70),
+                    ),
+                    validator: (v) => v!.length >= 10 ? null : 'Invalid mobile',
                   ),
-                  validator: (v) => v!.length >= 10 ? null : 'Invalid mobile',
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedLanguage,
-                  decoration: const InputDecoration(
-                    labelText: "Preferred Language",
-                    prefixIcon: Icon(Icons.language),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedLanguage,
+                    dropdownColor: const Color(0xFF1A1A5E), // Match dark theme
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Preferred Language",
+                      prefixIcon: Icon(Icons.language, color: Colors.white70),
+                    ),
+                    items: _languages.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                    onChanged: (v) => setState(() => _selectedLanguage = v!),
                   ),
-                  items: _languages.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                  onChanged: (v) => setState(() => _selectedLanguage = v!),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedLiteracy,
-                  decoration: const InputDecoration(
-                    labelText: "Literacy Level",
-                    prefixIcon: Icon(Icons.school_outlined),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedLiteracy,
+                    dropdownColor: const Color(0xFF1A1A5E),
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Literacy Level",
+                      prefixIcon: Icon(Icons.school_outlined, color: Colors.white70),
+                    ),
+                    items: _literacyLevels.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                    onChanged: (v) => setState(() => _selectedLiteracy = v!),
                   ),
-                  items: _literacyLevels.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                  onChanged: (v) => setState(() => _selectedLiteracy = v!),
-                ),
-                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: Icon(Icons.lock_outline),
+                   const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Password",
+                      prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
+                    ),
+                    validator: (v) => v!.length >= 6 ? null : 'Min 6 chars',
                   ),
-                  validator: (v) => v!.length >= 6 ? null : 'Min 6 chars',
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Confirm Password",
-                    prefixIcon: Icon(Icons.lock_outline),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Confirm Password",
+                      prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
+                    ),
+                    validator: (v) => v!.isNotEmpty ? null : 'Required',
                   ),
-                  validator: (v) => v!.isNotEmpty ? null : 'Required',
-                ),
-                const SizedBox(height: 32),
-                Consumer<AuthProvider>(
-                  builder: (context, auth, child) {
-                    return ElevatedButton(
-                      onPressed: auth.isLoading ? null : _submit,
-                      child: auth.isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(color: Colors.white),
-                            )
-                          : const Text("REGISTER"),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(height: 32),
+                  Consumer<AuthProvider>(
+                    builder: (context, auth, child) {
+                      return ElevatedButton(
+                        onPressed: auth.isLoading ? null : _submit,
+                        style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Theme.of(context).primaryColor,
+                          ),
+                        child: auth.isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(color: Colors.white),
+                              )
+                            : const Text("REGISTER"),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

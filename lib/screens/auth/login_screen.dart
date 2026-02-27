@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../home/home_screen.dart';
 import 'register_screen.dart';
+import '../../widgets/glass_scaffold.dart';
+import '../../widgets/glass_container.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,33 +50,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GlassScaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - 50, // simple fix for full height look
-              ),
-              child: IntrinsicHeight(
-                child: Form(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: GlassContainer(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Spacer(),
                     Icon(
                       Icons.lock_outline_rounded,
                       size: 80,
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.white,
                     ),
                     const SizedBox(height: 32),
                     Text(
                       "Welcome Back",
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Colors.white,
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       "Sign in to continue",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
+                            color: Colors.white70,
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -89,9 +89,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         labelText: "Email or Identifier",
-                        prefixIcon: Icon(Icons.email_outlined),
+                        prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -104,9 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
+                      style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         labelText: "Password",
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -120,39 +122,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (context, auth, child) {
                         return ElevatedButton(
                           onPressed: auth.isLoading ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Theme.of(context).primaryColor,
+                          ),
                           child: auth.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 )
                               : const Text("LOGIN"),
                         );
                       },
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?"),
+                        const Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => const RegisterScreen()),
                             );
                           },
-                          child: const Text("Sign Up"),
+                          child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
                   ],
                 ),
+              ),
             ),
-          ),
           ),
         ),
       ),

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/glass_container.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -10,18 +13,18 @@ class ProgressScreen extends StatefulWidget {
 }
 
 class _ProgressScreenState extends State<ProgressScreen> {
-  // Storing the userId here as requested
-  final String userId = "6958d283084e431c490edf8d";
+  late String userId;
   late Future<AssessmentReport> futureReport;
 
   @override
   void initState() {
     super.initState();
+    final authUser = context.read<AuthProvider>().user;
+    userId = authUser?.id ?? "guest";
     futureReport = fetchAssessmentReport();
   }
 
   Future<AssessmentReport> fetchAssessmentReport() async {
-    // Using the stored userId in the API URL
     final url = Uri.parse('https://sarathi-ai-8hk8.onrender.com/api/assessment/report/$userId');
     
     try {
@@ -40,20 +43,30 @@ class _ProgressScreenState extends State<ProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Progress")),
+      backgroundColor: Colors.transparent, // Transparent because parent HomeScreen has GlassScaffold
+      appBar: AppBar(
+        title: const Text("My Progress", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: FutureBuilder<AssessmentReport>(
         future: futureReport,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Colors.white));
           } else if (snapshot.hasError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  "Error: ${snapshot.error}",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.red),
+                child: GlassContainer(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    "Error: ${snapshot.error}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
                 ),
               ),
             );
@@ -64,7 +77,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Status Section
+                   // Status Section
                   _buildStatusCard(data.status),
                   const SizedBox(height: 20),
                   
@@ -76,7 +89,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           "Lessons Done", 
                           "${data.lessonsCompleted}", 
                           Icons.check_circle_outline,
-                          Colors.blue
+                          Colors.lightBlueAccent
                         )
                       ),
                       const SizedBox(width: 16),
@@ -85,7 +98,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           "Avg Score", 
                           data.averageQuizScore.toStringAsFixed(1), 
                           Icons.star_border,
-                          Colors.orange
+                          Colors.amberAccent
                         )
                       ),
                     ],
@@ -95,27 +108,38 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   // Lesson List Header
                   Text(
                     "Completed Lessons", 
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    )
                   ),
                   const SizedBox(height: 12),
                   
                   // List of Lessons
                   if (data.lessonTitles.isEmpty)
-                    const Text("No lessons completed yet.")
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("No lessons completed yet.", style: TextStyle(color: Colors.white70)),
+                    )
                   else
-                    ...data.lessonTitles.map((title) => Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: const Icon(Icons.play_lesson, color: Colors.deepPurple),
-                        title: Text(title),
+                    ...data.lessonTitles.map((title) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: GlassContainer(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.play_lesson, color: Colors.white),
+                            const SizedBox(width: 16),
+                            Expanded(child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16))),
+                          ],
+                        ),
                       ),
                     )),
                 ],
               ),
             );
           }
-          return const Center(child: Text("No data available"));
+          return const Center(child: Text("No data available", style: TextStyle(color: Colors.white)));
         },
       ),
     );
@@ -124,16 +148,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
   // Widget for the main Status display
   Widget _buildStatusCard(String status) {
     final isSuccess = status == "On Track";
-    final color = isSuccess ? Colors.green : Colors.orange;
+    final color = isSuccess ? Colors.greenAccent : Colors.orangeAccent;
     
-    return Container(
-      width: double.infinity,
+    return GlassContainer(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.5)),
-      ),
+      width: double.infinity,
       child: Column(
         children: [
           Icon(Icons.emoji_events, size: 60, color: color),
@@ -143,10 +162,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
             style: TextStyle(
               fontSize: 28, 
               fontWeight: FontWeight.bold, 
-              color: color
+              color: color,
+              shadows: [
+                Shadow(
+                  blurRadius: 10.0,
+                  color: color.withOpacity(0.5),
+                  offset: const Offset(0, 0),
+                ),
+              ]
             ),
           ),
-          const Text("Overall Status", style: TextStyle(color: Colors.grey)),
+          const Text("Overall Status", style: TextStyle(color: Colors.white70)),
         ],
       ),
     );
@@ -154,31 +180,19 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   // Widget for small statistic cards
   Widget _buildInfoCard(String label, String value, IconData icon, Color iconColor) {
-    return Container(
+    return GlassContainer(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
       child: Column(
         children: [
           Icon(icon, size: 32, color: iconColor),
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Text(
             label,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: const TextStyle(fontSize: 14, color: Colors.white70),
             textAlign: TextAlign.center,
           ),
         ],
@@ -205,7 +219,6 @@ class AssessmentReport {
     return AssessmentReport(
       lessonsCompleted: json['lessonsCompleted'] ?? 0,
       lessonTitles: List<String>.from(json['lessonTitles'] ?? []),
-      // Handle cases where score might be int or double in JSON
       averageQuizScore: (json['averageQuizScore'] ?? 0).toDouble(),
       status: json['status'] ?? 'Unknown',
     );

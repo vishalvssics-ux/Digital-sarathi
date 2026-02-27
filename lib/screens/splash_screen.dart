@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import 'auth/login_screen.dart';
 import 'home/home_screen.dart';
+import '../../widgets/glass_scaffold.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -62,8 +64,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return GlassScaffold(
       body: Center(
         child: FadeTransition(
           opacity: _animation,
@@ -75,11 +76,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white.withOpacity(0.1), // Glassy logo bg
                   shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      color: Colors.black.withOpacity(0.2),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -96,14 +98,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 "Digital Sarathi",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Your AI Companion for Digital Literacy",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: Colors.white70,
                 ),
               ),
             ],

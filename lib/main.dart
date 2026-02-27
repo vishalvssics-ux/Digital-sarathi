@@ -26,30 +26,37 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: const Color(0xFF6200EE),
+          scaffoldBackgroundColor: Colors.transparent, // Important for GlassScaffold
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF6200EE),
             secondary: const Color(0xFF03DAC6),
+            brightness: Brightness.dark, // Switch to dark mode
           ),
-          textTheme: GoogleFonts.poppinsTextTheme(
+          textTheme: GoogleFonts.outfitTextTheme(
             Theme.of(context).textTheme,
+          ).apply(
+            bodyColor: Colors.white,
+            displayColor: Colors.white,
           ),
           useMaterial3: true,
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: Colors.white.withOpacity(0.1), // Glassy input
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF6200EE), width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            labelStyle: const TextStyle(color: Colors.white70),
+            hintStyle: const TextStyle(color: Colors.white38),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
