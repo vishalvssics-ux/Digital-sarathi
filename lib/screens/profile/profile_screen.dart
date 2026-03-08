@@ -441,21 +441,24 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 
                 const SizedBox(height: 48),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    auth.logout();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  },
-                  icon: const Icon(Icons.logout),
-                  label: const Text("Logout"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.withOpacity(0.2),
-                    foregroundColor: Colors.red[100],
-                    elevation: 0,
-                    side: BorderSide(color: Colors.red.withOpacity(0.5)),
+                SizedBox(
+                  width: 100,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      auth.logout();
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false,
+                      );
+                    },
+                    icon: const Icon(Icons.logout),
+                    label: const Text("Logout"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.withOpacity(0.2),
+                      foregroundColor: Colors.red[100],
+                      elevation: 0,
+                      side: BorderSide(color: Colors.red.withOpacity(0.5)),
+                    ),
                   ),
                 ),
               ],
@@ -488,6 +491,207 @@ class _ProfileItem extends StatelessWidget {
 // Edit Profile Screen (Updated)
 // ---------------------------------------------------------------------------
 
+// class EditProfileScreen extends StatefulWidget {
+//   final AuthProvider authProvider;
+
+//   const EditProfileScreen({super.key, required this.authProvider});
+
+//   @override
+//   State<EditProfileScreen> createState() => _EditProfileScreenState();
+// }
+
+// class _EditProfileScreenState extends State<EditProfileScreen> {
+//   final _formKey = GlobalKey<FormState>();
+  
+//   late TextEditingController _nameController;
+//   late TextEditingController _emailController;
+//   late TextEditingController _mobileController;
+//   late TextEditingController _languageController;
+//   late TextEditingController _literacyController;
+  
+//   bool _isLoading = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     final user = widget.authProvider.user!;
+//     _nameController = TextEditingController(text: user.fullName);
+//     _emailController = TextEditingController(text: user.email);
+//     _mobileController = TextEditingController(text: user.mobile ?? "");
+//     _languageController = TextEditingController(text: user.language ?? "");
+//     _literacyController = TextEditingController(text: user.literacyLevel ?? "");
+//   }
+
+//   @override
+//   void dispose() {
+//     _nameController.dispose();
+//     _emailController.dispose();
+//     _mobileController.dispose();
+//     _languageController.dispose();
+//     _literacyController.dispose();
+//     super.dispose();
+//   }
+
+//   Future<void> _updateProfile() async {
+//     if (!_formKey.currentState!.validate()) return;
+
+//     setState(() => _isLoading = true);
+
+//     final userId = widget.authProvider.user!.id; 
+    
+//     // Dynamic URL based on ID
+//     final url = Uri.parse("https://sarathi-ai-8hk8.onrender.com/api/users/update/$userId");
+
+//     try {
+//       final body = jsonEncode({
+//         "fullName": _nameController.text.trim(),
+//         "email": _emailController.text.trim(),
+//         "mobile": _mobileController.text.trim(),
+//         "language": _languageController.text.trim(),
+//         "literacyLevel": _literacyController.text.trim(),
+//       });
+
+//       final response = await http.put(
+//         url,
+//         headers: {"Content-Type": "application/json"},
+//         body: body,
+//       );
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+        
+//         // 1. Check if 'user' key exists in response
+//         if (data['user'] != null) {
+//            // 2. Convert JSON to User object
+//            // Make sure your User model handles the '_id' field coming from backend
+//            User updatedUser = User.fromJson(data['user']);
+           
+//            // 3. Update Provider (This triggers the refresh on the previous page)
+//            widget.authProvider.fetchUserProfile(updatedUser.id!);
+           
+//            ScaffoldMessenger.of(context).showSnackBar(
+//              const SnackBar(content: Text("Profile updated successfully")),
+//            );
+           
+//            // 4. Return to previous screen (which is now refreshed)
+//            Navigator.pop(context);
+//         } else {
+//            throw Exception("User data missing in response");
+//         }
+
+//       } else {
+//         throw Exception("Failed to update: ${response.body}");
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+//       );
+//     } finally {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GlassScaffold(
+//       appBar: AppBar(
+//         title: const Text("Edit Profile", style: TextStyle(color: Colors.white)),
+//         backgroundColor: Colors.transparent,
+//         elevation: 0,
+//         iconTheme: const IconThemeData(color: Colors.white),
+//       ),
+//       body: SingleChildScrollView(
+//         padding: const EdgeInsets.all(16),
+//         child: GlassContainer(
+//           padding: const EdgeInsets.all(16),
+//           child: Form(
+//             key: _formKey,
+//             child: Column(
+//               children: [
+//                 TextFormField(
+//                   controller: _nameController,
+//                   style: const TextStyle(color: Colors.white),
+//                   decoration: const InputDecoration(
+//                     labelText: "Full Name",
+//                     labelStyle: TextStyle(color: Colors.white70),
+//                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+//                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//                   ),
+//                   validator: (val) => val!.isEmpty ? "Name is required" : null,
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextFormField(
+//                   controller: _emailController,
+//                   style: const TextStyle(color: Colors.white),
+//                   decoration: const InputDecoration(
+//                     labelText: "Email",
+//                     labelStyle: TextStyle(color: Colors.white70),
+//                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+//                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//                   ),
+//                   validator: (val) => val!.isEmpty ? "Email is required" : null,
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextFormField(
+//                   controller: _mobileController,
+//                   keyboardType: TextInputType.phone,
+//                   style: const TextStyle(color: Colors.white),
+//                   decoration: const InputDecoration(
+//                     labelText: "Mobile",
+//                     labelStyle: TextStyle(color: Colors.white70),
+//                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+//                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextFormField(
+//                   controller: _languageController,
+//                   style: const TextStyle(color: Colors.white),
+//                   decoration: const InputDecoration(
+//                     labelText: "Language",
+//                     labelStyle: TextStyle(color: Colors.white70),
+//                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+//                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextFormField(
+//                   controller: _literacyController,
+//                   style: const TextStyle(color: Colors.white),
+//                   decoration: const InputDecoration(
+//                     labelText: "Literacy Level",
+//                     labelStyle: TextStyle(color: Colors.white70),
+//                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+//                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 32),
+//                 SizedBox(
+//                   width: double.infinity,
+//                   height: 50,
+//                   child: ElevatedButton(
+//                     onPressed: _isLoading ? null : _updateProfile,
+//                     style: ElevatedButton.styleFrom(
+//                         backgroundColor: Colors.white,
+//                         foregroundColor: Theme.of(context).primaryColor,
+//                     ),
+//                     child: _isLoading 
+//                       ? SizedBox(
+//                           height: 20,
+//                           width: 20,
+//                           child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).primaryColor)
+//                         ) 
+//                       : const Text("Save Changes"),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 class EditProfileScreen extends StatefulWidget {
   final AuthProvider authProvider;
 
@@ -503,8 +707,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _mobileController;
-  late TextEditingController _languageController;
-  late TextEditingController _literacyController;
+  
+  // -- Dropdown Data --
+  final List<String> _languages = ['English', 'Malayalam', 'Hindi', 'Tamil'];
+  final List<String> _literacyLevels = ['Beginner', 'Intermediate', 'Advanced'];
+  
+  // -- Dropdown Selection State --
+  late String _selectedLanguage;
+  late String _selectedLiteracy;
   
   bool _isLoading = false;
 
@@ -515,8 +725,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController = TextEditingController(text: user.fullName);
     _emailController = TextEditingController(text: user.email);
     _mobileController = TextEditingController(text: user.mobile ?? "");
-    _languageController = TextEditingController(text: user.language ?? "");
-    _literacyController = TextEditingController(text: user.literacyLevel ?? "");
+
+    // Initialize Language Dropdown
+    // If user has a language set and it exists in our list, use it. Otherwise default to first item.
+    if (user.language != null && _languages.contains(user.language)) {
+      _selectedLanguage = user.language!;
+    } else {
+      _selectedLanguage = _languages[0]; 
+    }
+
+    // Initialize Literacy Dropdown
+    if (user.literacyLevel != null && _literacyLevels.contains(user.literacyLevel)) {
+      _selectedLiteracy = user.literacyLevel!;
+    } else {
+      _selectedLiteracy = _literacyLevels[0];
+    }
   }
 
   @override
@@ -524,8 +747,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _mobileController.dispose();
-    _languageController.dispose();
-    _literacyController.dispose();
+    // No need to dispose strings
     super.dispose();
   }
 
@@ -536,7 +758,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final userId = widget.authProvider.user!.id; 
     
-    // Dynamic URL based on ID
     final url = Uri.parse("https://sarathi-ai-8hk8.onrender.com/api/users/update/$userId");
 
     try {
@@ -544,8 +765,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         "fullName": _nameController.text.trim(),
         "email": _emailController.text.trim(),
         "mobile": _mobileController.text.trim(),
-        "language": _languageController.text.trim(),
-        "literacyLevel": _literacyController.text.trim(),
+        "language": _selectedLanguage, // Use selected dropdown value
+        "literacyLevel": _selectedLiteracy, // Use selected dropdown value
       });
 
       final response = await http.put(
@@ -557,20 +778,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         
-        // 1. Check if 'user' key exists in response
         if (data['user'] != null) {
-           // 2. Convert JSON to User object
-           // Make sure your User model handles the '_id' field coming from backend
            User updatedUser = User.fromJson(data['user']);
            
-           // 3. Update Provider (This triggers the refresh on the previous page)
-           widget.authProvider.fetchUserProfile(updatedUser.id!);
+           // Update Provider
+           // Note: You might need to make sure fetchUserProfile doesn't overwrite 
+           // local state immediately if async issues arise, but usually this is fine.
+           await widget.authProvider.fetchUserProfile(updatedUser.id!);
            
+           if (!mounted) return;
+
            ScaffoldMessenger.of(context).showSnackBar(
              const SnackBar(content: Text("Profile updated successfully")),
            );
            
-           // 4. Return to previous screen (which is now refreshed)
            Navigator.pop(context);
         } else {
            throw Exception("User data missing in response");
@@ -580,12 +801,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         throw Exception("Failed to update: ${response.body}");
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // Helper widget to style the Dropdowns consistently
+  InputDecoration _glassInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white70),
+      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+      border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+    );
   }
 
   @override
@@ -605,64 +838,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             key: _formKey,
             child: Column(
               children: [
+                // Full Name
                 TextFormField(
                   controller: _nameController,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Full Name",
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  ),
+                  decoration: _glassInputDecoration("Full Name"),
                   validator: (val) => val!.isEmpty ? "Name is required" : null,
                 ),
                 const SizedBox(height: 16),
+                
+                // Email
                 TextFormField(
                   controller: _emailController,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  ),
+                  decoration: _glassInputDecoration("Email"),
                   validator: (val) => val!.isEmpty ? "Email is required" : null,
                 ),
                 const SizedBox(height: 16),
+                
+                // Mobile
                 TextFormField(
                   controller: _mobileController,
                   keyboardType: TextInputType.phone,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Mobile",
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  ),
+                  decoration: _glassInputDecoration("Mobile"),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _languageController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Language",
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  ),
+                
+                // Language Dropdown
+                DropdownButtonFormField<String>(
+                  value: _selectedLanguage,
+                  dropdownColor: Colors.black87, // Dark background for the menu popup
+                  style: const TextStyle(color: Colors.white), // White text for selected item
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  decoration: _glassInputDecoration("Language"),
+                  items: _languages.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedLanguage = newValue!;
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _literacyController,
+                
+                // Literacy Dropdown
+                DropdownButtonFormField<String>(
+                  value: _selectedLiteracy,
+                  dropdownColor: Colors.black87, // Dark background for the menu popup
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Literacy Level",
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  ),
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  decoration: _glassInputDecoration("Literacy Level"),
+                  items: _literacyLevels.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedLiteracy = newValue!;
+                    });
+                  },
                 ),
+
                 const SizedBox(height: 32),
+                
+                // Submit Button
                 SizedBox(
                   width: double.infinity,
                   height: 50,

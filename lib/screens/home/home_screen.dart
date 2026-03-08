@@ -78,10 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const ChatScreen(),
-    Center(child: Text('Learn Screen - Coming Soon', style: TextStyle(fontSize: 24, color: Colors.white70))),
-    Center(child: Text('Progress Screen - Coming Soon', style: TextStyle(fontSize: 24, color: Colors.white70))),
-    // const QuizScreen(),
-    // const ProgressScreen(),
+
+    const QuizScreen(),
+    const ProgressScreen(),
     const ProfileScreen(),
   ];
 
