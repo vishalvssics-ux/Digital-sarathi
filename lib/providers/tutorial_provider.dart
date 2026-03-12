@@ -50,22 +50,20 @@ class TutorialProvider with ChangeNotifier {
   }
 // inside lib/providers/tutorial_provider.dart
 
-Future<void> fetchQuiz(String lessonId) async {
+Future<void> fetchQuiz(String lessonId, String userId) async {
   _isQuizLoading = true;
   _quizError = null;
   _currentQuiz = null;
   notifyListeners();
 
   try {
-    print("Fetching quiz for lesson: $lessonId");
+    print("Fetching quiz for lesson: $lessonId, userId: $userId");
 
-    // The _apiClient returns the data directly as a Map, not a Response object
-    final responseData = await _apiClient.get('/assessment/quiz/$lessonId');
+    // Inclusion of userId as query parameter
+    final responseData = await _apiClient.get('/assessment/quiz/$lessonId?userId=$userId');
 
     print("API Response Data: $responseData");
 
-    // Directly convert the Map to your Model
-    // We don't need json.decode because _apiClient likely did it already
     _currentQuiz = QuizResponse.fromJson(responseData);
 
   } catch (e) {

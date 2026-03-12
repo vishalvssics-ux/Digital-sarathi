@@ -7,8 +7,9 @@ import '../../widgets/glass_container.dart';
 
 class ActiveQuizScreen extends StatefulWidget {
   final QuizResponse quizData;
+  final String userId;
 
-  const ActiveQuizScreen({super.key, required this.quizData});
+  const ActiveQuizScreen({super.key, required this.quizData, required this.userId});
 
   @override
   State<ActiveQuizScreen> createState() => _ActiveQuizScreenState();
@@ -56,13 +57,9 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
     );
 
-    // TODO: Replace with actual User ID from your Auth Provider if available
-    // For now keeping what was there or using a placeholder
-    const String userId = "6958d283084e431c490edf8d"; 
-
     try {
       await context.read<TutorialProvider>().submitQuiz(
-        userId: userId,
+        userId: widget.userId,
         lessonId: widget.quizData.lessonId,
         answers: _answersToSubmit,
       );

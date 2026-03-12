@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sarathi_app/providers/auth_provider.dart';
 import '../../screens/quiz/active_quiz_screen.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../models/tutorial_model.dart';
@@ -153,8 +154,8 @@ class _TutorialCard extends StatelessWidget {
                         )),
                     const SizedBox(height: 16),
     
-                    Consumer<TutorialProvider>(
-                      builder: (context, provider, child) {
+                    Consumer2<TutorialProvider, AuthProvider>(
+                      builder: (context, provider, authProvider, child) {
                         return ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -167,13 +168,15 @@ class _TutorialCard extends StatelessWidget {
                           onPressed: provider.isQuizLoading
                               ? null
                               : () async {
+                                  final userId = authProvider.user?.id ?? "6958d3ff8147f047d27ed171";
+                                  
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text("Loading quiz..."),
                                     ),
                                   );
     
-                                  await provider.fetchQuiz(tutorial.id!);
+                                  await provider.fetchQuiz(tutorial.id!, userId);
     
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -184,6 +187,7 @@ class _TutorialCard extends StatelessWidget {
                                       MaterialPageRoute(
                                         builder: (context) => ActiveQuizScreen(
                                           quizData: provider.currentQuiz!,
+                                          userId: userId,
                                         ),
                                       ),
                                     );
