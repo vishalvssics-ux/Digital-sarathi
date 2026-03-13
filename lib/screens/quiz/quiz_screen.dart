@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:http/http.dart'as http;
 import 'package:provider/provider.dart';
+import 'package:sarathi_app/models/tutorial_model.dart';
 import 'package:sarathi_app/providers/auth_provider.dart';
-import '../../screens/quiz/active_quiz_screen.dart';
-import '../../providers/tutorial_provider.dart';
-import '../../models/tutorial_model.dart';
-import '../../widgets/glass_container.dart'; // Import GlassContainer
+import 'package:sarathi_app/providers/tutorial_provider.dart';
+import 'package:sarathi_app/screens/quiz/active_quiz_screen.dart';
+
+import '../../widgets/glass_container.dart';
+import '../../core/utils/localization_util.dart';
+import 'package:flutter/material.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -14,23 +17,62 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  String? _language;
 
   @override
   void initState() {
     super.initState();
+    _fetchInitialData();
+  }
+
+  void _fetchInitialData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TutorialProvider>().fetchTutorials();
+      final authProvider = context.read<AuthProvider>();
+      final user = authProvider.user;
+      if (user != null) {
+        _language = user.language;
+        context.read<TutorialProvider>().fetchTutorials(
+          userId: user.id,
+          lang: _language != null ? _getLangCode(_language!) : null,
+        );
+      }
     });
+  }
+
+  String _getLangCode(String lang) {
+    switch (lang) {
+      case 'Malayalam': return 'ml';
+      case 'Tamil': return 'ta';
+      case 'Hindi': return 'hi';
+      default: return 'en';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authUser = context.watch<AuthProvider>().user;
+    
+    // Reactive Refresh
+    if (authUser != null && authUser.language != _language) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _language = authUser.language;
+          });
+          context.read<TutorialProvider>().fetchTutorials(
+            userId: authUser.id,
+            lang: _language != null ? _getLangCode(_language!) : null,
+          );
+        }
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text(
-          "Learn & Quiz",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          LocalizationUtil.translate('quiz_title', context.watch<AuthProvider>().user?.language),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -38,7 +80,7 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
       body: Consumer<TutorialProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading) {
+          if (provider.isLoading && provider.tutorials.isEmpty) {
             return const Center(child: CircularProgressIndicator(color: Colors.white));
           }
     
@@ -51,23 +93,79 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
               );
             }
-            return const Center(
+            return Center(
               child: Text(
-                "No tutorials found.",
-                style: TextStyle(color: Colors.white),
+                LocalizationUtil.translate('quiz_no_tutorials', context.watch<AuthProvider>().user?.language),
+                style: const TextStyle(color: Colors.white),
               ),
             );
           }
     
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: provider.tutorials.length,
+            itemCount: provider.tutorials.length + 1,
             itemBuilder: (context, index) {
-              final tutorial = provider.tutorials[index];
-              return _TutorialCard(tutorial: tutorial);
+              if (index == 0) {
+                return _buildProgressSummary(provider);
+              }
+              final tutorial = provider.tutorials[index - 1];
+              final isCompleted = provider.report?.lessonTitles.contains(tutorial.title) ?? false;
+              return _TutorialCard(tutorial: tutorial, isCompleted: isCompleted);
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildProgressSummary(TutorialProvider provider) {
+    final report = provider.report;
+    if (report == null) return const SizedBox.shrink();
+
+    final totalLessons = provider.tutorials.length;
+    final progress = totalLessons > 0 ? report.lessonsCompleted / totalLessons : 0.0;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: GlassContainer(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  LocalizationUtil.translate('quiz_overall_progress', context.watch<AuthProvider>().user?.language),
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "${(progress * 100).toInt()}%",
+                  style: const TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.white.withOpacity(0.1),
+                color: Colors.amber,
+                minHeight: 12,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              LocalizationUtil.translate(
+                'quiz_completed_summary', 
+                context.watch<AuthProvider>().user?.language,
+                args: {'done': '${report.lessonsCompleted}', 'total': '$totalLessons'}
+              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -75,10 +173,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
 class _TutorialCard extends StatelessWidget {
   final Tutorial tutorial;
+  final bool isCompleted;
 
   const _TutorialCard({
     super.key,
     required this.tutorial,
+    this.isCompleted = false,
   });
 
   @override
@@ -90,12 +190,23 @@ class _TutorialCard extends StatelessWidget {
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
-            title: Text(
-              tutorial.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white, 
-              ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    tutorial.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, 
+                    ),
+                  ),
+                ),
+                if (isCompleted)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Icon(Icons.check_circle, color: Colors.greenAccent, size: 20),
+                  ),
+              ],
             ),
             subtitle: Text(
               "${tutorial.category} • ${tutorial.language}",
@@ -104,10 +215,13 @@ class _TutorialCard extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: isCompleted ? Colors.greenAccent.withOpacity(0.2) : Colors.white.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.school, color: Colors.white), 
+              child: Icon(
+                isCompleted ? Icons.check : Icons.school, 
+                color: isCompleted ? Colors.greenAccent : Colors.white,
+              ), 
             ),
             iconColor: Colors.white,
             collapsedIconColor: Colors.white70,
@@ -123,9 +237,9 @@ class _TutorialCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Divider(color: Colors.white.withOpacity(0.2)),
-                    const Text(
-                      "Steps:",
-                      style: TextStyle(
+                    Text(
+                      LocalizationUtil.translate('quiz_steps', context.watch<AuthProvider>().user?.language),
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -158,8 +272,9 @@ class _TutorialCard extends StatelessWidget {
                       builder: (context, provider, authProvider, child) {
                         return ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Theme.of(context).primaryColor,
+                            backgroundColor: isCompleted ? Colors.greenAccent.withOpacity(0.1) : Colors.white,
+                            foregroundColor: isCompleted ? Colors.greenAccent : Theme.of(context).primaryColor,
+                            side: isCompleted ? const BorderSide(color: Colors.greenAccent) : null,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -210,10 +325,14 @@ class _TutorialCard extends StatelessWidget {
                                     color: Colors.deepPurple,
                                   ),
                                 )
-                              : const Icon(Icons.play_arrow),
+                              : Icon(isCompleted ? Icons.replay : Icons.play_arrow),
                           label: Text(
-                            provider.isQuizLoading ? "Loading..." : "Take Quiz",
-                            style: const TextStyle(fontSize: 16),
+                            provider.isQuizLoading 
+                              ? "Loading..." 
+                              : (isCompleted 
+                                  ? LocalizationUtil.translate('quiz_retake', authProvider.user?.language) 
+                                  : LocalizationUtil.translate('quiz_start', authProvider.user?.language)),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         );
                       },
@@ -228,3 +347,4 @@ class _TutorialCard extends StatelessWidget {
     );
   }
 }
+

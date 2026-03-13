@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
-import 'auth/login_screen.dart';
+import 'onboarding_screen.dart';
 import 'home/home_screen.dart';
 import '../../widgets/glass_scaffold.dart';
 
@@ -40,18 +40,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     final token = prefs.getString('auth_token');
 
     if (token != null) {
-      // Ideally check if token is valid or fetch profile
-       // For now, assuming valid if exists
-       // We might want to update user profile in background
-       // Provider calls?
-       // context.read<AuthProvider>().fetchProfile(); (if we stored ID)
-       
        Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } else {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
       );
     }
   }

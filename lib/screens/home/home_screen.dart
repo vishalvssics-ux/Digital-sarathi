@@ -65,6 +65,9 @@ import '../chat/chat_screen.dart';
 import '../quiz/quiz_screen.dart';
 import '../progress/progress_screen.dart';
 import '../profile/profile_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../core/utils/localization_util.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -86,6 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final language = context.watch<AuthProvider>().user?.language;
+    
     return GlassScaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -109,26 +114,26 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
           selectedIndex: _currentIndex,
           onDestinationSelected: (index) => setState(() => _currentIndex = index),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.chat),
-              selectedIcon: Icon(Icons.chat),
-              label: 'Chat',
+              icon: const Icon(Icons.chat),
+              selectedIcon: const Icon(Icons.chat),
+              label: LocalizationUtil.translate('nav_chat', language),
             ),
             NavigationDestination(
-              icon: Icon(Icons.book),
-              selectedIcon: Icon(Icons.book),
-              label: 'Learn',
+              icon: const Icon(Icons.book),
+              selectedIcon: const Icon(Icons.book),
+              label: LocalizationUtil.translate('nav_learn', language),
             ),
             NavigationDestination(
-              icon: Icon(Icons.quiz),
-              selectedIcon: Icon(Icons.quiz),
-              label: 'Progress',
+              icon: const Icon(Icons.quiz),
+              selectedIcon: const Icon(Icons.quiz),
+              label: LocalizationUtil.translate('nav_progress', language),
             ),
             NavigationDestination(
-              icon: Icon(Icons.person),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profile',
+              icon: const Icon(Icons.person),
+              selectedIcon: const Icon(Icons.person),
+              label: LocalizationUtil.translate('nav_profile', language),
             ),
           ],
         ),

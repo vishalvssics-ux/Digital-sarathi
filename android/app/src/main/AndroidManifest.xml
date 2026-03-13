@@ -4,7 +4,7 @@
 
 
     <application
-        android:label="sarathi_app"
+        android:label="Digital Sarathi"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

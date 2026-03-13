@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -102,14 +103,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
-                      ),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.white70,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
@@ -135,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                 )
-                              : const Text("LOGIN"),
+                              : const Text("LOGIN",),
                         );
                       },
                     ),

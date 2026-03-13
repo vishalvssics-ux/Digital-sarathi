@@ -359,13 +359,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:sarathi_app/widgets/glass_scaffold.dart';
 
 import '../../providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 // IMPORT YOUR MODEL HERE
 import '../../models/user_model.dart'; 
-import '../../widgets/glass_scaffold.dart';
 import '../../widgets/glass_container.dart';
+import '../../core/utils/localization_util.dart';
  
 
 class ProfileScreen extends StatelessWidget {
@@ -387,7 +388,7 @@ class ProfileScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text("Profile", style: TextStyle(color: Colors.white)),
+            title: Text(LocalizationUtil.translate('nav_profile', user.language), style: const TextStyle(color: Colors.white)),
             backgroundColor: Colors.transparent,
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
@@ -433,9 +434,9 @@ class ProfileScreen extends StatelessWidget {
                    padding: const EdgeInsets.symmetric(vertical: 8),
                    child: Column(
                      children: [
-                        _ProfileItem(title: "Mobile", value: user.mobile ?? 'N/A', icon: Icons.phone),
-                        _ProfileItem(title: "Language", value: user.language ?? 'N/A', icon: Icons.language),
-                        _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
+                        _ProfileItem(title: LocalizationUtil.translate('nav_profile', user.language), value: user.mobile ?? 'N/A', icon: Icons.phone),
+                        _ProfileItem(title: LocalizationUtil.translate('select_language', user.language), value: user.language ?? 'N/A', icon: Icons.language),
+                      //  _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
                      ]
                    )
                 ),
@@ -825,7 +826,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       appBar: AppBar(
-        title: const Text("Edit Profile", style: TextStyle(color: Colors.white)),
+        title: Text(LocalizationUtil.translate('nav_profile', widget.authProvider.user?.language), style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -887,24 +888,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 16),
                 
                 // Literacy Dropdown
-                DropdownButtonFormField<String>(
-                  value: _selectedLiteracy,
-                  dropdownColor: Colors.black87, // Dark background for the menu popup
-                  style: const TextStyle(color: Colors.white),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                  decoration: _glassInputDecoration("Literacy Level"),
-                  items: _literacyLevels.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedLiteracy = newValue!;
-                    });
-                  },
-                ),
+                // DropdownButtonFormField<String>(
+                //   value: _selectedLiteracy,
+                //   dropdownColor: Colors.black87, // Dark background for the menu popup
+                //   style: const TextStyle(color: Colors.white),
+                //   icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                //   decoration: _glassInputDecoration("Literacy Level"),
+                //   items: _literacyLevels.map((String value) {
+                //     return DropdownMenuItem<String>(
+                //       value: value,
+                //       child: Text(value),
+                //     );
+                //   }).toList(),
+                //   onChanged: (newValue) {
+                //     setState(() {
+                //       _selectedLiteracy = newValue!;
+                //     });
+                //   },
+                // ),
 
                 const SizedBox(height: 32),
                 
@@ -924,7 +925,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).primaryColor)
                         ) 
-                      : const Text("Save Changes"),
+                      : Text(LocalizationUtil.translate('onboard_next', widget.authProvider.user?.language)),
                   ),
                 ),
               ],

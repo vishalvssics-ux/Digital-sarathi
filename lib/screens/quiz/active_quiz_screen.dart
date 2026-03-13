@@ -57,22 +57,31 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
     );
 
+    Map<String, dynamic>? result;
     try {
-      await context.read<TutorialProvider>().submitQuiz(
+      result = await context.read<TutorialProvider>().submitQuiz(
         userId: widget.userId,
         lessonId: widget.quizData.lessonId,
         answers: _answersToSubmit,
       );
     } catch (e) {
-      debugPrint("Submission error handled silently in UI: $e");
+      debugPrint("Submission error handled in UI: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save score: ${e.toString()}"), backgroundColor: Colors.red),
+        );
+      }
     }
 
     if (mounted) Navigator.pop(context);
 
-    if (mounted) _showResultDialog();
+    if (mounted) _showResultDialog(result);
   }
 
-  void _showResultDialog() {
+  void _showResultDialog(Map<String, dynamic>? result) {
+    final serverMessage = result?['message'] ?? (result != null ? "Score added successfully!" : "Quiz completed!");
+    final serverPoints = result?['points'] ?? result?['score'];
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -81,26 +90,52 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(color: Colors.white.withOpacity(0.2))),
-        title: const Column(
+        title: Column(
           children: [
-            Icon(Icons.emoji_events, size: 50, color: Colors.amber),
-            SizedBox(height: 10),
-            Text("Quiz Completed!", style: TextStyle(color: Colors.white)),
+            const Icon(Icons.emoji_events, size: 50, color: Colors.amber),
+            const SizedBox(height: 10),
+            Text(result != null ? "Great Job!" : "Quiz Completed!", style: const TextStyle(color: Colors.white)),
           ],
         ),
-        content: Text(
-          "You scored $_score out of ${widget.quizData.questions.length}",
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 18, color: Colors.white70),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "You scored $_score out of ${widget.quizData.questions.length}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            if (serverPoints != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  "+$serverPoints Points added to your profile",
+                  style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                ),
+            ],
+            const SizedBox(height: 16),
+            Text(
+              serverMessage,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, color: Colors.white70),
+            ),
+          ],
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop(); 
-              Navigator.of(context).pop(); 
-            },
-            child: const Text("Back to Lessons", style: TextStyle(fontSize: 16, color: Colors.white)),
-          )
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(ctx).pop(); 
+                Navigator.of(context).pop(); 
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF1A1A5E),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text("Continue to Lessons", style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -147,9 +182,18 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "Question ${_currentIndex + 1} of $totalQuestions",
-              style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Question ${_currentIndex + 1} of $totalQuestions",
+                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "${(progress * 100).toInt()}%",
+                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 

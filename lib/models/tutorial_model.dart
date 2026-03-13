@@ -18,6 +18,7 @@ class TutorialStep {
 class Tutorial {
   final String? id;
   final String title;
+  final String? originalTitle;
   final String category;
   final String description;
   final String language;
@@ -26,6 +27,7 @@ class Tutorial {
   Tutorial({
     this.id,
     required this.title,
+    this.originalTitle,
     required this.category,
     required this.description,
     required this.language,
@@ -39,6 +41,7 @@ class Tutorial {
     return Tutorial(
       id: json['_id'] ?? json['id'],
       title: json['title'] ?? '',
+      originalTitle: json['originalTitle'],
       category: json['category'] ?? '',
       description: json['description'] ?? '',
       language: json['language'] ?? 'English',
@@ -46,7 +49,6 @@ class Tutorial {
     );
   }
 }
-// lib/models/quiz_model.dart
 
 class QuizResponse {
   final String id;
@@ -61,7 +63,7 @@ class QuizResponse {
 
   factory QuizResponse.fromJson(Map<String, dynamic> json) {
     return QuizResponse(
-      id: json['_id']?.toString() ?? '', // Maps "_id" to "id"
+      id: json['_id']?.toString() ?? '',
       lessonId: json['lessonId']?.toString() ?? '',
       questions: (json['questions'] as List<dynamic>?)
           ?.map((q) => Question.fromJson(q))
@@ -92,6 +94,29 @@ class Question {
       options: List<String>.from(json['options'] ?? []),
       correctAnswer: json['correctAnswer'] ?? '',
       type: json['type'] ?? 'radio',
+    );
+  }
+}
+
+class AssessmentReport {
+  final int lessonsCompleted;
+  final List<String> lessonTitles;
+  final double averageQuizScore;
+  final String status;
+
+  AssessmentReport({
+    required this.lessonsCompleted,
+    required this.lessonTitles,
+    required this.averageQuizScore,
+    required this.status,
+  });
+
+  factory AssessmentReport.fromJson(Map<String, dynamic> json) {
+    return AssessmentReport(
+      lessonsCompleted: json['lessonsCompleted'] ?? 0,
+      lessonTitles: List<String>.from(json['lessonTitles'] ?? []),
+      averageQuizScore: (json['averageQuizScore'] ?? 0).toDouble(),
+      status: json['status'] ?? 'Unknown',
     );
   }
 }

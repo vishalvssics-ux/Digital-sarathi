@@ -26,26 +26,61 @@ class TutorialProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchTutorials() async {
+  AssessmentReport? _report;
+  AssessmentReport? get report => _report;
+
+  Future<void> fetchTutorials({String? userId, String? lang}) async {
     _isLoading = true;
-    // notifyListeners(); // Avoid rebuilding immediately if not needed, but good for loading spinners
+    _errorMessage = null; // Clear previous error
+    notifyListeners();
 
     try {
-      final response = await _apiClient.get('/tutorials');
+      String endpoint = '/tutorials';
+      List<String> params = [];
+      if (userId != null && userId.isNotEmpty) {
+        params.add('userId=$userId');
+      }
+      if (lang != null && lang.isNotEmpty) {
+        params.add('lang=$lang');
+      }
+      
+      if (params.isNotEmpty) {
+        endpoint += '?${params.join('&')}';
+      }
+      
+      final response = await _apiClient.get(endpoint);
       if (response is List) {
         _tutorials = response.map<Tutorial>((item) => Tutorial.fromJson(item)).toList();
       } else {
         // Handle case where it might be wrapped in { "data": [...] }
         if (response is Map && response.containsKey('data')) {
              var data = response['data'] as List;
-             _tutorials = data.map<Tutorial>((item) => Tutorial.fromJson(item)).toList();
+             _tutorials = data.map<Tutorial>((item) => Tutorial.fromJson(item)).toList(); 
         }
+      }
+
+      if (userId != null) {
+        await fetchProgressReport(userId, lang: lang);
       }
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> fetchProgressReport(String userId, {String? lang}) async {
+    try {
+      String endpoint = '/assessment/report/$userId';
+      if (lang != null && lang.isNotEmpty) {
+        endpoint += '?lang=$lang';
+      }
+      final responseData = await _apiClient.get(endpoint);
+      _report = AssessmentReport.fromJson(responseData);
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching progress report: $e");
     }
   }
 // inside lib/providers/tutorial_provider.dart
@@ -76,7 +111,7 @@ Future<void> fetchQuiz(String lessonId, String userId) async {
 }
 // inside TutorialProvider
 
-  Future<void> submitQuiz({
+  Future<Map<String, dynamic>?> submitQuiz({
     required String userId,
     required String lessonId,
     required Map<String, String> answers,
@@ -85,7 +120,6 @@ Future<void> fetchQuiz(String lessonId, String userId) async {
     notifyListeners();
 
     try {
-      // 1. Create the Map directly (Do not use json.encode unless your specific client requires a String)
       final bodyData = {
         "userId": userId,
         "lessonId": lessonId,
@@ -94,19 +128,18 @@ Future<void> fetchQuiz(String lessonId, String userId) async {
 
       print("Submitting Quiz Data: $bodyData");
 
-      // 2. Call the API
-      // Since your client returns a Map automatically, it likely handles json encoding/decoding internally.
       final responseData = await _apiClient.post('/assessment/quiz/submit', bodyData);
 
-      // 3. Handle Success
-      // If code reaches here, it means it was successful (200 OK).
-      // 'responseData' holds the server response (e.g., {"message": "Success", "score": ...})
       print("Quiz Submitted Successfully: $responseData");
+      
+      // Auto refresh report after submission
+      await fetchProgressReport(userId);
+      
+      return responseData;
 
     } catch (e) {
       print("Error submitting quiz: $e");
-      // Optional: You can rethrow the error if you want the UI to show a specific SnackBar
-      // rethrow; 
+      rethrow; 
     } finally {
       _isSubmitting = false;
       notifyListeners();

@@ -26,8 +26,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _selectedLanguage = 'English';
   final List<String> _languages = ['English', 'Malayalam', 'Hindi', 'Tamil'];
   
-  String _selectedLiteracy = 'Beginner';
-  final List<String> _literacyLevels = ['Beginner', 'Intermediate', 'Advanced'];
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -46,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       email: _emailController.text.trim(),
       mobile: _mobileController.text.trim(),
       language: _selectedLanguage,
-      literacyLevel: _selectedLiteracy,
+   
     );
 
     try {
@@ -131,36 +131,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: (v) => setState(() => _selectedLanguage = v!),
                   ),
                   const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    value: _selectedLiteracy,
-                    dropdownColor: const Color(0xFF1A1A5E),
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      labelText: "Literacy Level",
-                      prefixIcon: Icon(Icons.school_outlined, color: Colors.white70),
-                    ),
-                    items: _literacyLevels.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
-                    onChanged: (v) => setState(() => _selectedLiteracy = v!),
-                  ),
+                  // DropdownButtonFormField<String>(
+                  //   value: _selectedLiteracy,
+                  //   dropdownColor: const Color(0xFF1A1A5E),
+                  //   style: const TextStyle(color: Colors.white),
+                  //   decoration: const InputDecoration(
+                  //     labelText: "Literacy Level",
+                  //     prefixIcon: Icon(Icons.school_outlined, color: Colors.white70),
+                  //   ),
+                  //   items: _literacyLevels.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
+                  //   onChanged: (v) => setState(() => _selectedLiteracy = v!),
+                  // ),
                    const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Password",
-                      prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
+                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                      ),
                     ),
                     validator: (v) => v!.length >= 6 ? null : 'Min 6 chars',
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _confirmPasswordController,
-                    obscureText: true,
+                    obscureText: !_isConfirmPasswordVisible,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Confirm Password",
-                      prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
+                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                      ),
                     ),
                     validator: (v) => v!.isNotEmpty ? null : 'Required',
                   ),
