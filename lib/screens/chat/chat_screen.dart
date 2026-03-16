@@ -459,8 +459,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart'; 
+import 'package:dio/dio.dart';
+import 'package:line_icons/line_icon.dart'; 
 import 'package:line_icons/line_icons.dart';
+
+import 'package:sarathi_app/screens/video/video_list_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -752,6 +755,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (_) => VideoListScreen()));
+          }, icon:LineIcon(LineIcons.video, color: Colors.white)),
           IconButton(
               onPressed: _clearHistory,
               icon: const Icon(LineIcons.trash, color: Colors.white)),

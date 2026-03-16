@@ -17,6 +17,7 @@ class LocalizationUtil {
       'nav_learn': 'Learn',
       'nav_progress': 'Progress',
       'nav_profile': 'Profile',
+      'nav_gallery': 'Gallery',
       
       // Progress Screen
       'progress_title': 'My Progress',
@@ -57,6 +58,7 @@ class LocalizationUtil {
       'nav_learn': 'கற்க',
       'nav_progress': 'உயர்வு',
       'nav_profile': 'சுயவிவரம்',
+      'nav_gallery': 'கேலரி',
 
       // Progress Screen
       'progress_title': 'எனது முன்னேற்றம்',
@@ -97,6 +99,7 @@ class LocalizationUtil {
       'nav_learn': 'सीखें',
       'nav_progress': 'प्रगति',
       'nav_profile': 'प्रोफ़ाइल',
+      'nav_gallery': 'गैलरी',
 
       // Progress Screen
       'progress_title': 'मेरी प्रगति',
@@ -137,6 +140,7 @@ class LocalizationUtil {
       'nav_learn': 'പഠിക്കാം',
       'nav_progress': 'പുരോഗതി',
       'nav_profile': 'പ്രൊഫൈൽ',
+      'nav_gallery': 'ഗാലറി',
 
       // Progress Screen
       'progress_title': 'എന്റെ പുരോഗതി',

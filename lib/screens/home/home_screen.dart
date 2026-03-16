@@ -65,6 +65,7 @@ import '../chat/chat_screen.dart';
 import '../quiz/quiz_screen.dart';
 import '../progress/progress_screen.dart';
 import '../profile/profile_screen.dart';
+import '../video/video_list_screen.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/utils/localization_util.dart';
@@ -85,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const QuizScreen(),
     const ProgressScreen(),
     const ProfileScreen(),
+    const VideoListScreen(),
   ];
 
   @override
@@ -134,6 +136,11 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.person),
               selectedIcon: const Icon(Icons.person),
               label: LocalizationUtil.translate('nav_profile', language),
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.video_library),
+              selectedIcon: const Icon(Icons.video_library),
+              label: LocalizationUtil.translate('nav_gallery', language),
             ),
           ],
         ),
