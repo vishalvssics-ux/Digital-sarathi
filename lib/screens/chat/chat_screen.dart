@@ -793,7 +793,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                itemCount: _suggestions.length > 10 ? 10 : _suggestions.length,
+                itemCount: _suggestions.length > 15 ? 15 : _suggestions.length,
                 itemBuilder: (context, index) {
                   final title = _suggestions[index] is Map
                       ? _suggestions[index]['title']
