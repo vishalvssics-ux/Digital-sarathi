@@ -752,9 +752,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (_) => VideoListScreen()));
-          }, icon:LineIcon(LineIcons.video)),
+          // IconButton(onPressed: (){
+          //   Navigator.push(context, MaterialPageRoute(builder: (_) => VideoListScreen()));
+          // }, icon:LineIcon(LineIcons.video)),
           IconButton(
               onPressed: _clearHistory,
               icon: const Icon(LineIcons.trash)),

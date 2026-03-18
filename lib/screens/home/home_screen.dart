@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const QuizScreen(),
     const ProgressScreen(),
     const ProfileScreen(),
-    const VideoListScreen(),
+  //  const VideoListScreen(),
   ];
 
   @override
@@ -78,11 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
               selectedIcon: const Icon(Icons.person),
               label: LocalizationUtil.translate('nav_profile', language),
             ),
-            NavigationDestination(
-              icon: const Icon(Icons.video_library),
-              selectedIcon: const Icon(Icons.video_library),
-              label: LocalizationUtil.translate('nav_gallery', language),
-            ),
+            // NavigationDestination(
+            //   icon: const Icon(Icons.video_library),
+            //   selectedIcon: const Icon(Icons.video_library),
+            //   label: LocalizationUtil.translate('nav_gallery', language),
+            // ),
           ],
         ),
       ),
