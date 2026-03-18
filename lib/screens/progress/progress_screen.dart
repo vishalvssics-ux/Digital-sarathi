@@ -1,7 +1,7 @@
 import 'package:sarathi_app/providers/auth_provider.dart';
 import 'package:sarathi_app/providers/tutorial_provider.dart';
 
-import '../../widgets/glass_container.dart';
+
 import '../../core/utils/localization_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -67,27 +67,22 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final lang = authUser?.language;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, 
       appBar: AppBar(
         title: Text(
           LocalizationUtil.translate('progress_title', lang), 
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<TutorialProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.report == null) {
-            return const Center(child: CircularProgressIndicator(color: Colors.white));
+            return const Center(child: CircularProgressIndicator());
           }
           
           final data = provider.report;
           
           if (data == null) {
-            return Center(child: Text(LocalizationUtil.translate('progress_no_data', lang), style: const TextStyle(color: Colors.white)));
+            return Center(child: Text(LocalizationUtil.translate('progress_no_data', lang)));
           }
 
           // Localized titles are available in provider.tutorials if we fetched with lang
@@ -129,7 +124,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         LocalizationUtil.translate('progress_avg_score', lang), 
                         data.averageQuizScore.toStringAsFixed(1), 
                         Icons.star_border,
-                        Colors.amberAccent
+                        Colors.amber
                       )
                     ),
                   ],
@@ -141,7 +136,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   LocalizationUtil.translate('progress_completed_lessons', lang), 
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   )
                 ),
                 const SizedBox(height: 12),
@@ -150,19 +144,21 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 if (displayTitles.isEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(LocalizationUtil.translate('progress_no_lessons', lang), style: const TextStyle(color: Colors.white70)),
+                    child: Text(LocalizationUtil.translate('progress_no_lessons', lang), style: const TextStyle(color: Colors.black54)),
                   )
                 else
                   ...displayTitles.map((title) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
-                    child: GlassContainer(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.play_lesson, color: Colors.white),
-                          const SizedBox(width: 16),
-                          Expanded(child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16))),
-                        ],
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.play_lesson, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 16),
+                            Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
+                          ],
+                        ),
                       ),
                     ),
                   )),
@@ -186,10 +182,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     // Localize status if needed, but assuming server might return translated status or keep as is.
     // For now, let's just use the server status but localize the "Overall Status" label.
 
-    return GlassContainer(
-      padding: const EdgeInsets.all(24),
-      width: double.infinity,
-      child: Column(
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
         children: [
           Icon(Icons.emoji_events, size: 60, color: color),
           const SizedBox(height: 12),
@@ -208,31 +206,34 @@ class _ProgressScreenState extends State<ProgressScreen> {
               ]
             ),
           ),
-          Text(LocalizationUtil.translate('progress_overall_status', lang), style: const TextStyle(color: Colors.white70)),
+          Text(LocalizationUtil.translate('progress_overall_status', lang), style: const TextStyle(color: Colors.black54)),
         ],
       ),
-    );
+    ),
+    ));
   }
 
   // Widget for small statistic cards
   Widget _buildInfoCard(String label, String value, IconData icon, Color iconColor) {
-    return GlassContainer(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
         children: [
           Icon(icon, size: 32, color: iconColor),
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           Text(
             label,
-            style: const TextStyle(fontSize: 14, color: Colors.white70),
+            style: const TextStyle(fontSize: 14, color: Colors.black54),
             textAlign: TextAlign.center,
           ),
         ],
       ),
+    ),
     );
   }
 }

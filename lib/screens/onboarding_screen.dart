@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/glass_scaffold.dart';
-import '../../widgets/glass_container.dart';
+
 import 'auth/login_screen.dart';
 import '../core/utils/localization_util.dart';
 
@@ -37,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
@@ -48,10 +47,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   DropdownButton<String>(
                     value: _selectedLanguage,
-                    dropdownColor: const Color(0xFF1A1A5E),
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold),
                     underline: const SizedBox(),
-                    icon: const Icon(Icons.language, color: Colors.white),
+                    icon: const Icon(Icons.language, color: Color(0xFF1E293B)),
                     items: _languages.map((l) => DropdownMenuItem(value: l, child: Text(l))).toList(),
                     onChanged: (v) {
                       if (v != null) setState(() => _selectedLanguage = v);
@@ -87,12 +85,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GlassContainer(
+          Container(
             padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
             child: Icon(
               data.icon,
               size: 100,
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
             ),
           ),
           const SizedBox(height: 50),
@@ -102,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Color(0xFF1E293B), // Slate 800
             ),
           ),
           const SizedBox(height: 20),
@@ -111,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 18,
-              color: Colors.white70,
+              color: Color(0xFF64748B), // Slate 500
             ),
           ),
         ],
@@ -134,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 height: 8,
                 width: _currentPage == index ? 24 : 8,
                 decoration: BoxDecoration(
-                  color: _currentPage == index ? Colors.white : Colors.white38,
+                  color: _currentPage == index ? Theme.of(context).primaryColor : const Color(0xFFCBD5E1), // Slate 200
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -156,8 +158,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF1A1A5E),
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),

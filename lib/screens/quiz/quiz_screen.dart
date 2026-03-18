@@ -5,7 +5,7 @@ import 'package:sarathi_app/providers/auth_provider.dart';
 import 'package:sarathi_app/providers/tutorial_provider.dart';
 import 'package:sarathi_app/screens/quiz/active_quiz_screen.dart';
 
-import '../../widgets/glass_container.dart';
+
 import '../../core/utils/localization_util.dart';
 import 'package:flutter/material.dart';
 
@@ -68,20 +68,15 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           LocalizationUtil.translate('quiz_title', context.watch<AuthProvider>().user?.language),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<TutorialProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.tutorials.isEmpty) {
-            return const Center(child: CircularProgressIndicator(color: Colors.white));
+            return const Center(child: CircularProgressIndicator());
           }
     
           if (provider.tutorials.isEmpty) {
@@ -89,14 +84,12 @@ class _QuizScreenState extends State<QuizScreen> {
               return Center(
                 child: Text(
                   "Error: ${provider.errorMessage}",
-                  style: const TextStyle(color: Colors.white),
                 ),
               );
             }
             return Center(
               child: Text(
                 LocalizationUtil.translate('quiz_no_tutorials', context.watch<AuthProvider>().user?.language),
-                style: const TextStyle(color: Colors.white),
               ),
             );
           }
@@ -127,44 +120,46 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
-      child: GlassContainer(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  LocalizationUtil.translate('quiz_overall_progress', context.watch<AuthProvider>().user?.language),
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "${(progress * 100).toInt()}%",
-                  style: const TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    LocalizationUtil.translate('quiz_overall_progress', context.watch<AuthProvider>().user?.language),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const Text(
+                    "%",
+                    style: TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: Colors.white.withOpacity(0.1),
+                backgroundColor: const Color(0xFFF1F5F9),
                 color: Colors.amber,
                 minHeight: 12,
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              LocalizationUtil.translate(
-                'quiz_completed_summary', 
-                context.watch<AuthProvider>().user?.language,
-                args: {'done': '${report.lessonsCompleted}', 'total': '$totalLessons'}
+              Text(
+                LocalizationUtil.translate(
+                  'quiz_completed_summary', 
+                  context.watch<AuthProvider>().user?.language,
+                  args: {'done': '${report.lessonsCompleted}', 'total': '$totalLessons'}
+                ),
+                style: const TextStyle(color: Colors.black54, fontSize: 14),
               ),
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -185,8 +180,8 @@ class _TutorialCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: GlassContainer(
-        padding: const EdgeInsets.all(0),
+      child: Card(
+        margin: const EdgeInsets.all(0),
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
@@ -197,7 +192,6 @@ class _TutorialCard extends StatelessWidget {
                     tutorial.title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, 
                     ),
                   ),
                 ),
@@ -210,21 +204,19 @@ class _TutorialCard extends StatelessWidget {
             ),
             subtitle: Text(
               "${tutorial.category} • ${tutorial.language}",
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              style: const TextStyle(color: Colors.black54, fontSize: 12),
             ),
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isCompleted ? Colors.greenAccent.withOpacity(0.2) : Colors.white.withOpacity(0.1),
+                color: isCompleted ? Colors.green.withOpacity(0.1) : Theme.of(context).primaryColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isCompleted ? Icons.check : Icons.school, 
-                color: isCompleted ? Colors.greenAccent : Colors.white,
+                color: isCompleted ? Colors.green : Theme.of(context).primaryColor,
               ), 
             ),
-            iconColor: Colors.white,
-            collapsedIconColor: Colors.white70,
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -233,15 +225,14 @@ class _TutorialCard extends StatelessWidget {
                   children: [
                     Text(
                       tutorial.description,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Color(0xFF1E293B)),
                     ),
                     const SizedBox(height: 12),
-                    Divider(color: Colors.white.withOpacity(0.2)),
+                    Divider(color: Colors.grey.shade200),
                     Text(
                       LocalizationUtil.translate('quiz_steps', context.watch<AuthProvider>().user?.language),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -252,17 +243,17 @@ class _TutorialCard extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 radius: 10,
-                                backgroundColor: Colors.white.withOpacity(0.2),
+                                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
                                 child: Text(
                                   "${step.stepNumber}",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.white,
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Expanded(child: Text(step.instruction, style: const TextStyle(color: Colors.white70))),
+                              Expanded(child: Text(step.instruction, style: const TextStyle(color: Colors.black54))),
                             ],
                           ),
                         )),

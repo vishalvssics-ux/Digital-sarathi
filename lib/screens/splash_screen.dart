@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import 'onboarding_screen.dart';
 import 'home/home_screen.dart';
-import '../../widgets/glass_scaffold.dart';
+
 
 
 class SplashScreen extends StatefulWidget {
@@ -58,8 +58,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
-      body: Center(
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8FAFC), // Slate 50
+              Color(0xFFEEF2FF), // Indigo 50
+            ],
+          ),
+        ),
+      child: Center(
         child: FadeTransition(
           opacity: _animation,
           child: Column(
@@ -70,21 +83,20 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1), // Glassy logo bg
+                  color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+                      color: Theme.of(context).primaryColor.withOpacity(0.15),
+                      blurRadius: 30,
+                      offset: const Offset(0, 15),
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.assistant, 
                   size: 60, 
-                  color: Colors.white
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(height: 24),
@@ -92,20 +104,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 "Digital Sarathi",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B), // Slate 800
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Your AI Companion for Digital Literacy",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
+                  color: const Color(0xFF64748B), // Slate 500
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
+    ));  }
 }

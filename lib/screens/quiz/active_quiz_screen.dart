@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sarathi_app/models/tutorial_model.dart';
 import 'package:sarathi_app/providers/tutorial_provider.dart';
-import '../../widgets/glass_scaffold.dart';
-import '../../widgets/glass_container.dart';
+
 
 class ActiveQuizScreen extends StatefulWidget {
   final QuizResponse quizData;
@@ -54,7 +53,7 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
     Map<String, dynamic>? result;
@@ -86,15 +85,13 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A5E).withOpacity(0.9), // Dark glass
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.2))),
+            borderRadius: BorderRadius.circular(20)),
         title: Column(
           children: [
             const Icon(Icons.emoji_events, size: 50, color: Colors.amber),
             const SizedBox(height: 10),
-            Text(result != null ? "Great Job!" : "Quiz Completed!", style: const TextStyle(color: Colors.white)),
+            Text(result != null ? "Great Job!" : "Quiz Completed!"),
           ],
         ),
         content: Column(
@@ -103,20 +100,20 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
             Text(
               "You scored $_score out of ${widget.quizData.questions.length}",
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             if (serverPoints != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   "+$serverPoints Points added to your profile",
-                  style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
             ],
             const SizedBox(height: 16),
             Text(
               serverMessage,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Colors.white70),
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ],
         ),
@@ -128,8 +125,8 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
                 Navigator.of(context).pop(); 
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF1A1A5E),
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text("Continue to Lessons", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -144,13 +141,11 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.quizData.questions.isEmpty) {
-      return GlassScaffold(
+      return Scaffold(
         appBar: AppBar(
-          title: const Text("Quiz", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.transparent,
-          iconTheme: const IconThemeData(color: Colors.white),
+          title: const Text("Quiz"),
         ),
-        body: const Center(child: Text("No questions available.", style: TextStyle(color: Colors.white))),
+        body: const Center(child: Text("No questions available.")),
       );
     }
 
@@ -158,13 +153,10 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
     final totalQuestions = widget.quizData.questions.length;
     final progress = (_currentIndex + 1) / totalQuestions;
 
-    return GlassScaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: const Text("Quiz Assessment", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text("Quiz Assessment"),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -176,7 +168,7 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: Colors.white.withOpacity(0.1),
+                backgroundColor: const Color(0xFFF1F5F9),
                 color: Colors.amber, // Stand out color
                 minHeight: 8,
               ),
@@ -187,7 +179,7 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
               children: [
                 Text(
                   "Question ${_currentIndex + 1} of $totalQuestions",
-                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   "${(progress * 100).toInt()}%",
@@ -198,11 +190,13 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
             const SizedBox(height: 20),
 
             // 2. Question Text
-            GlassContainer(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                question.questionText,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 1.3, color: Colors.white),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  question.questionText,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 1.3),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -227,9 +221,6 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
                   : (_isAnswerChecked ? _nextQuestion : _checkAnswer),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  backgroundColor: Colors.white,
-                  foregroundColor: Theme.of(context).primaryColor,
-                  disabledBackgroundColor: Colors.white.withOpacity(0.3),
                 ),
                 child: Text(
                   _isAnswerChecked 
@@ -246,30 +237,30 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
   }
 
   Widget _buildOptionTile(String option, String correctAnswer) {
-    Color borderColor = Colors.white.withOpacity(0.2);
-    Color backgroundColor = Colors.white.withOpacity(0.05);
+    Color borderColor = const Color(0xFFE2E8F0);
+    Color backgroundColor = Colors.white;
     IconData? icon;
     Color iconColor = Colors.transparent;
 
     if (_isAnswerChecked) {
       if (option == correctAnswer) {
         // Correct -> Green styled
-        borderColor = Colors.greenAccent;
-        backgroundColor = Colors.green.withOpacity(0.2);
+        borderColor = Colors.green;
+        backgroundColor = Colors.green.shade50;
         icon = Icons.check_circle;
-        iconColor = Colors.greenAccent;
+        iconColor = Colors.green;
       } else if (option == _selectedOption) {
         // Wrong -> Red styled
-        borderColor = Colors.redAccent;
-        backgroundColor = Colors.red.withOpacity(0.2);
+        borderColor = Colors.red;
+        backgroundColor = Colors.red.shade50;
         icon = Icons.cancel;
-        iconColor = Colors.redAccent;
+        iconColor = Colors.red;
       }
     } else {
       if (option == _selectedOption) {
         // Selected -> White/Blue styled
-        borderColor = Colors.white;
-        backgroundColor = Colors.white.withOpacity(0.2);
+        borderColor = Theme.of(context).primaryColor;
+        backgroundColor = Theme.of(context).primaryColor.withOpacity(0.05);
       }
     }
 
@@ -294,7 +285,7 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
             Expanded(
               child: Text(
                 option,
-                style: const TextStyle(fontSize: 16, color: Colors.white),
+                style: const TextStyle(fontSize: 16, color: Color(0xFF1E293B)),
               ),
             ),
             if (icon != null)
@@ -303,13 +294,7 @@ class _ActiveQuizScreenState extends State<ActiveQuizScreen> {
               Radio<String>(
                 value: option,
                 groupValue: _selectedOption,
-                activeColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith((states) {
-                    if (states.contains(MaterialState.selected)) {
-                        return Colors.white;
-                    }
-                    return Colors.white70;
-                }),
+                activeColor: Theme.of(context).primaryColor,
                 onChanged: _isAnswerChecked ? null : (val) {
                   setState(() {
                     _selectedOption = val;

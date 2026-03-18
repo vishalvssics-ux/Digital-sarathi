@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../home/home_screen.dart';
 import 'register_screen.dart';
-import '../../widgets/glass_scaffold.dart';
-import '../../widgets/glass_container.dart';
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -51,30 +50,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: GlassContainer(
-              padding: const EdgeInsets.all(24.0),
+            child: Card(
+              margin: const EdgeInsets.all(0),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(
-                      Icons.lock_outline_rounded,
-                      size: 80,
-                      color: Colors.white,
-                    ),
+                      Icon(
+                        Icons.lock_outline_rounded,
+                        size: 80,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     const SizedBox(height: 32),
                     Text(
                       "Welcome Back",
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       "Sign in to continue",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white70,
+                            color: Colors.black54,
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -90,10 +90,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.black87),
                       decoration: const InputDecoration(
                         labelText: "Email or Identifier",
-                        prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
+                        prefixIcon: Icon(Icons.email_outlined),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -106,14 +106,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.black87),
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                          prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.white70,
                             ),
                             onPressed: () {
                               setState(() {
@@ -135,8 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         return ElevatedButton(
                           onPressed: auth.isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Theme.of(context).primaryColor,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
                           ),
                           child: auth.isLoading
                               ? SizedBox(
@@ -155,14 +154,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
+                        const Text("Don't have an account?", style: TextStyle(color: Colors.black54)),
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => const RegisterScreen()),
                             );
                           },
-                          child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          child: Text("Sign Up", style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -173,6 +172,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

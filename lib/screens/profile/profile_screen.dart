@@ -359,13 +359,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:sarathi_app/widgets/glass_scaffold.dart';
-
-import '../../providers/auth_provider.dart';
-import '../auth/login_screen.dart';
-// IMPORT YOUR MODEL HERE
-import '../../models/user_model.dart'; 
-import '../../widgets/glass_container.dart';
+import 'package:sarathi_app/models/user_model.dart';
+import 'package:sarathi_app/providers/auth_provider.dart';
+import 'package:sarathi_app/screens/auth/login_screen.dart';
 import '../../core/utils/localization_util.dart';
  
 
@@ -380,18 +376,13 @@ class ProfileScreen extends StatelessWidget {
 
         if (user == null) {
           return const Scaffold(
-            backgroundColor: Colors.transparent, 
-            body: Center(child: Text("Not logged in", style: TextStyle(color: Colors.white)))
+            body: Center(child: Text("Not logged in"))
           );
         }
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: Text(LocalizationUtil.translate('nav_profile', user.language), style: const TextStyle(color: Colors.white)),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
+            title: Text(LocalizationUtil.translate('nav_profile', user.language)),
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
@@ -414,30 +405,32 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+                    border: Border.all(color: Colors.grey.withOpacity(0.2), width: 2),
                   ),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white.withOpacity(0.1),
+                    backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
                     child: Text(
                       user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(user.fullName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
-                Text(user.email, style: const TextStyle(color: Colors.white70)),
+                Text(user.fullName, style: Theme.of(context).textTheme.headlineSmall),
+                Text(user.email, style: const TextStyle(color: Colors.black54)),
                 const SizedBox(height: 32),
                 
-                GlassContainer(
-                   padding: const EdgeInsets.symmetric(vertical: 8),
-                   child: Column(
-                     children: [
-                        _ProfileItem(title: LocalizationUtil.translate('nav_profile', user.language), value: user.mobile ?? 'N/A', icon: Icons.phone),
-                        _ProfileItem(title: LocalizationUtil.translate('select_language', user.language), value: user.language ?? 'N/A', icon: Icons.language),
-                      //  _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
-                     ]
+                Card(
+                   child: Padding(
+                     padding: const EdgeInsets.symmetric(vertical: 8),
+                     child: Column(
+                       children: [
+                          _ProfileItem(title: LocalizationUtil.translate('nav_profile', user.language), value: user.mobile ?? 'N/A', icon: Icons.phone),
+                          _ProfileItem(title: LocalizationUtil.translate('select_language', user.language), value: user.language ?? 'N/A', icon: Icons.language),
+                        //  _ProfileItem(title: "Literacy Level", value: user.literacyLevel ?? 'N/A', icon: Icons.school),
+                       ]
+                     ),
                    )
                 ),
                 
@@ -455,10 +448,9 @@ class ProfileScreen extends StatelessWidget {
                     icon: const Icon(Icons.logout),
                     label: const Text("Logout"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.withOpacity(0.2),
-                      foregroundColor: Colors.red[100],
+                      backgroundColor: Colors.red.shade50,
+                      foregroundColor: Colors.red,
                       elevation: 0,
-                      side: BorderSide(color: Colors.red.withOpacity(0.5)),
                     ),
                   ),
                 ),
@@ -481,9 +473,9 @@ class _ProfileItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.white60)),
-      subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
+      leading: Icon(icon, color: Theme.of(context).primaryColor),
+      title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+      subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black87)),
     );
   }
 }
@@ -815,26 +807,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   InputDecoration _glassInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: Colors.white70),
-      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-      border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: Text(LocalizationUtil.translate('nav_profile', widget.authProvider.user?.language), style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(LocalizationUtil.translate('nav_profile', widget.authProvider.user?.language)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: GlassContainer(
-          padding: const EdgeInsets.all(16),
+        child: Card(
+          margin: const EdgeInsets.all(0),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
@@ -842,7 +829,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 // Full Name
                 TextFormField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black87),
                   decoration: _glassInputDecoration("Full Name"),
                   validator: (val) => val!.isEmpty ? "Name is required" : null,
                 ),
@@ -851,7 +838,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 // Email
                 TextFormField(
                   controller: _emailController,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black87),
                   decoration: _glassInputDecoration("Email"),
                   validator: (val) => val!.isEmpty ? "Email is required" : null,
                 ),
@@ -861,7 +848,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextFormField(
                   controller: _mobileController,
                   keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black87),
                   decoration: _glassInputDecoration("Mobile"),
                 ),
                 const SizedBox(height: 16),
@@ -869,14 +856,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 // Language Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedLanguage,
-                  dropdownColor: Colors.black87, // Dark background for the menu popup
-                  style: const TextStyle(color: Colors.white), // White text for selected item
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  style: const TextStyle(color: Colors.black87), // Black text for selected item
+                  icon: const Icon(Icons.arrow_drop_down),
                   decoration: _glassInputDecoration("Language"),
                   items: _languages.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(value, style: const TextStyle(color: Colors.black87)),
                     );
                   }).toList(),
                   onChanged: (newValue) {
@@ -933,6 +919,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

@@ -738,29 +738,26 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent for GlassScaffold parent
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text("Digital Sarathi",
                 style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                    fontSize: 18, fontWeight: FontWeight.bold)),
             Text(
               "$_language ${LocalizationUtil.translate('nav_chat', _language)}",
-              style: const TextStyle(fontSize: 12, color: Colors.white70)
+              style: const TextStyle(fontSize: 12)
             ),
           ],
         ),
         actions: [
           IconButton(onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (_) => VideoListScreen()));
-          }, icon:LineIcon(LineIcons.video, color: Colors.white)),
+          }, icon:LineIcon(LineIcons.video)),
           IconButton(
               onPressed: _clearHistory,
-              icon: const Icon(LineIcons.trash, color: Colors.white)),
+              icon: const Icon(LineIcons.trash)),
         ],
       ),
       body: Column(
@@ -777,12 +774,12 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text("Thinking...",
                   style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white70,
+                      color: Theme.of(context).colorScheme.primary,
                       fontStyle: FontStyle.italic)),
             ),
       
@@ -802,13 +799,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: ActionChip(
                       label: Text(title,
-                          style: const TextStyle(
-                              color: Colors.white,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 13)),
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: Colors.white.withOpacity(0.2))),
+                          side: const BorderSide(color: Color(0xFFE2E8F0))),
                       onPressed: () => _sendMessage(title),
                     ),
                   );
@@ -832,7 +829,7 @@ class _ChatScreenState extends State<ChatScreen> {
         constraints:
             BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.85),
         decoration: BoxDecoration(
-          color: isUser ? Theme.of(context).primaryColor.withOpacity(0.4) : Colors.white.withOpacity(0.1),
+          color: isUser ? Theme.of(context).primaryColor : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -843,7 +840,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? const Radius.circular(4)
                 : const Radius.circular(18),
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -851,29 +854,29 @@ class _ChatScreenState extends State<ChatScreen> {
             Text(
               m.text,
               style: TextStyle(
-                  color: Colors.white,
+                  color: isUser ? Colors.white : const Color(0xFF1E293B),
                   fontSize: 16,
                   fontWeight: m.steps.isNotEmpty ? FontWeight.bold : FontWeight.normal),
             ),
             if (m.steps.isNotEmpty) ...[
               const SizedBox(height: 10),
-              const Divider(height: 1, color: Colors.white24),
+              Divider(height: 1, color: isUser ? Colors.white24 : Colors.grey.shade300),
               const SizedBox(height: 10),
               ...m.steps.map((step) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("• ",
+                        Text("• ",
                             style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white70,
+                                color: isUser ? Colors.white70 : Colors.black54,
                                 fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(step,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white)),
+                                  color: isUser ? Colors.white : Colors.black87)),
                         ),
                       ],
                     ),
@@ -888,9 +891,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildInputArea() {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
-          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1)))),
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0)))),
       child: Row(
         children: [
           // MIC BUTTON
@@ -909,24 +912,24 @@ class _ChatScreenState extends State<ChatScreen> {
             child: TextField(
               controller: _inputController,
               enabled: true,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF1E293B)),
               decoration: InputDecoration(
                 hintText: _isListening ? "Listening..." : "How can I help?",
                 hintStyle:
-                    const TextStyle(color: Colors.white54),
+                    const TextStyle(color: Color(0xFF94A3B8)),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.5))),
+                    borderSide: BorderSide(color: Theme.of(context).primaryColor)),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.1),
+                fillColor: const Color(0xFFF8FAFC),
               ),
               onSubmitted: _sendMessage,
             ),

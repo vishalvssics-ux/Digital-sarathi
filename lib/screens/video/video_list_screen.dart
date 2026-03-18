@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
-import '../../widgets/glass_scaffold.dart';
-import '../../widgets/glass_container.dart';
+
 
 class VideoListScreen extends StatefulWidget {
   const VideoListScreen({super.key});
@@ -90,37 +89,36 @@ class _VideoListScreenState extends State<VideoListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text(
           "Phone Videos",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 if (errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: GlassContainer(
-                      padding: const EdgeInsets.all(12),
-                      color: Colors.redAccent,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.error_outline, color: Colors.white),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              errorMessage!,
-                              style: const TextStyle(color: Colors.white),
+                    child: Card(
+                      color: Colors.red.shade50,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.red),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                errorMessage!,
+                                style: const TextStyle(color: Colors.red),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -133,16 +131,17 @@ class _VideoListScreenState extends State<VideoListScreen> {
                         return _buildSampleVideoCard();
                       }
                       final video = videos[index - 1];
-                      return GlassContainer(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(8),
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
                       child: FutureBuilder(
                         future: video.thumbnailData,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return const ListTile(
                               title: Text("Loading...",
-                                  style: TextStyle(color: Colors.white70)),
+                                  style: TextStyle(color: Colors.black54)),
                             );
                           }
 
@@ -177,14 +176,14 @@ class _VideoListScreenState extends State<VideoListScreen> {
                             title: Text(
                               video.title ?? "Video $index",
                               style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontWeight: FontWeight.w600),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             subtitle: Text(
                               _formatDuration(video.duration),
-                              style: const TextStyle(color: Colors.white60),
+                              style: const TextStyle(color: Colors.black54),
                             ),
                             onTap: () async {
                               final file = await video.file;
@@ -203,7 +202,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                           );
                         },
                       ),
-                    );
+                    ));
                   },
                 ),
               ),
@@ -238,26 +237,27 @@ class _VideoListScreenState extends State<VideoListScreen> {
     required String path,
     required IconData icon,
   }) {
-    return GlassContainer(
-      padding: const EdgeInsets.all(8),
-      child: ListTile(
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
             width: 70,
             height: 70,
-            color: Colors.blueAccent.withOpacity(0.3),
-            child: Icon(icon, color: Colors.white, size: 30),
+            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            child: Icon(icon, color: Theme.of(context).primaryColor, size: 30),
           ),
         ),
         title: Text(
           title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(color: Colors.white60),
+          style: const TextStyle(color: Colors.black54),
         ),
         onTap: () {
           Navigator.push(
@@ -271,7 +271,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
           );
         },
       ),
-    );
+    ));
   }
 
   String _formatDuration(int seconds) {
@@ -333,12 +333,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: const Text("Video Player", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text("Video Player"),
       ),
       body: Center(
         child: _controller.value.isInitialized
@@ -346,10 +343,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 aspectRatio: _controller.value.aspectRatio,
                 child: VideoPlayer(_controller),
               )
-            : const CircularProgressIndicator(color: Colors.white),
+            : const CircularProgressIndicator(),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white24,
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
           setState(() {
             _controller.value.isPlaying
